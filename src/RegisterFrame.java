@@ -132,10 +132,4 @@ public class RegisterFrame extends JFrame {
         setLayout(null);
         setVisible(true);
     }
-
-    public static void main(String[] args) {
-        int[] size = {600, 800};
-        String title = "dwdw";
-        new RegisterFrame(size, title);
-    }
 }
