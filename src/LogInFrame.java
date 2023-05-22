@@ -7,17 +7,8 @@ import java.awt.event.ActionListener;
 
 public class LogInFrame extends JFrame {
 
-    private int[] frameSize = {0, 0};
-    private String frameTitle;
-
-    public void setLogInVisible()
-    {
-        setVisible(true);
-    }
-    public void setLogInInvisible()
-    {
-        setVisible(false);
-    }
+    private int[] frameSize = {0, 0}; // Stores size of the frame
+    private String frameTitle; // Stores name of the frame
 
     public LogInFrame(int[] size, String title) // Constructor for login frame
     {
@@ -46,7 +37,7 @@ public class LogInFrame extends JFrame {
                 frameSize[0] / 5,
                 frameSize[1] / 20
         );
-        IDLabel.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 10)); // Create margin to the text field
+        IDLabel.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, frameSize[0] / 50)); // Create margin to the label
         IDLabel.setFont(new Font("Arial", Font.BOLD, 25)); // Change font
         IDLabel.setHorizontalAlignment(JLabel.RIGHT); // Set horizontal alignment to right
         IDLabel.setVerticalAlignment(JLabel.CENTER); // Set vertical alignment to center
@@ -71,7 +62,7 @@ public class LogInFrame extends JFrame {
                 frameSize[0] / 5,
                 frameSize[1] / 20
         );
-        PWLabel.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 10)); // Create margin to the text field
+        PWLabel.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, frameSize[0] / 50)); // Create margin to the label
         PWLabel.setFont(new Font("Arial", Font.BOLD, 25)); // Change font
         PWLabel.setHorizontalAlignment(JLabel.RIGHT); // Set horizontal alignment to right
         PWLabel.setVerticalAlignment(JLabel.CENTER); // Set vertical alignment to center
@@ -100,12 +91,16 @@ public class LogInFrame extends JFrame {
         LogInButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                // Command for logging in
+                // If user exists
+                new MainFrame(frameSize, frameTitle);
+                dispose();
+                // else
+                // error log
             }
         });
         add(LogInButton);
 
-        JButton RegisterButton = new JButton("Register"); // Store button for logging in
+        JButton RegisterButton = new JButton("Register"); // Store button for registering
         // Set bound based on frame size
         RegisterButton.setBounds(
                 frameSize[0] * 3 / 5,
@@ -117,7 +112,8 @@ public class LogInFrame extends JFrame {
         RegisterButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                // Command for logging in
+                new RegisterFrame(frameSize, title); // Create register frame
+                dispose(); // Get rid of the frame
             }
         });
         add(RegisterButton);
@@ -128,14 +124,6 @@ public class LogInFrame extends JFrame {
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         setLayout(null);
         setVisible(true);
-    }
-
-
-
-    public static void main(String[] args) {
-        int[] size = {600, 800};
-        String title = "Financial Ledger";
-        new LogInFrame(size, title);
     }
 }
 
