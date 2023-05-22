@@ -4,6 +4,10 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.util.Arrays;
+import java.util.Scanner;
 
 public class LogInFrame extends JFrame {
 
@@ -68,7 +72,7 @@ public class LogInFrame extends JFrame {
         PWLabel.setVerticalAlignment(JLabel.CENTER); // Set vertical alignment to center
         add(PWLabel);
 
-        JTextField PWField = new JTextField(); // Store text field where the user can input their PW
+        JPasswordField PWField = new JPasswordField(); // Store text field where the user can input their PW
         // Set bound based on frame size
         PWField.setBounds(
                 frameSize[0] / 5,
@@ -77,6 +81,7 @@ public class LogInFrame extends JFrame {
                 frameSize[1] / 20
         );
         PWField.setFont(new Font("Arial", Font.PLAIN, 20)); // Change font
+        PWField.setEchoChar('•'); // Hide password
         add(PWField);
 
         JButton LogInButton = new JButton("Log In"); // Store button for logging in
@@ -91,11 +96,46 @@ public class LogInFrame extends JFrame {
         LogInButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                // If user exists
-                new MainFrame(frameSize, frameTitle);
-                dispose();
-                // else
-                // error log
+
+                String path = "src/userInfo/";
+                File dir = new File(path);
+                String[] users = dir.list(); // Get list of users
+                boolean userExists = false; // Check if user exists
+                for(String user : users)
+                {
+                    if(user.equals(IDField.getText()))
+                    {
+                        userExists = true;
+                        break;
+                    }
+                }
+
+                if(userExists) // If user ID exists
+                {
+                    String password = ""; // Stores password from text file
+                    path = path + IDField.getText() + "/password.txt"; // Get path of password file
+                    try {
+                        File PWFile = new File(path); // Fetch password file
+                        Scanner scanner = new Scanner(PWFile);
+                        password = scanner.nextLine(); // Read the password file
+                    } catch (FileNotFoundException ex) {
+                        System.err.println("Failed to read password file!" + ex.getMessage());
+                    }
+
+                    if(PWField.getText().equals(password)) // If user entered the correct password
+                    {
+                        new MainFrame(frameSize, frameTitle, IDField.getText());
+                        dispose();
+                    }
+                    else // If user did not enter the correct password
+                    {
+                        JOptionPane.showMessageDialog(null, "Wrong password!", "Password Error", JOptionPane.WARNING_MESSAGE);
+                    }
+                }
+                else // If user ID does not exist
+                {
+                    JOptionPane.showMessageDialog(null, "Such user does not exist!", "ID Error", JOptionPane.WARNING_MESSAGE);
+                }
             }
         });
         add(LogInButton);
