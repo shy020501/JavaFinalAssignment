@@ -11,6 +11,7 @@ import java.io.PrintWriter;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Base64;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -43,6 +44,11 @@ public class RegisterFrame extends JFrame {
             valid = true; // Set valid to true
         }
         return valid;
+    }
+
+    private String encoder(String password) // Encoder for encoding password before saving it in text file
+    {
+        return Base64.getEncoder().encodeToString(password.getBytes());
     }
 
     public RegisterFrame(int[] size, String title)
@@ -209,7 +215,7 @@ public class RegisterFrame extends JFrame {
                             // Write the password in file
                             FileOutputStream fileOutputStream = new FileOutputStream(path);
                             PrintWriter writer = new PrintWriter(fileOutputStream);
-                            writer.println(PWField.getText());
+                            writer.println(encoder(PWField.getText()));
                             writer.close();
                             fileOutputStream.close();
                         } catch (IOException ex) {
