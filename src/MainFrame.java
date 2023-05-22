@@ -169,7 +169,7 @@ public class MainFrame extends JFrame {
         analysisButton.setFont(new Font("Arial", Font.BOLD, 20));
         buttonPanel.add(analysisButton);
 
-        JButton assetButton = new JButton("Analysis"); // Button that moves to main frame
+        JButton assetButton = new JButton("Asset"); // Button that moves to main frame
         // Set bound based on frame size
         assetButton.setBounds(
                 frameSize[0] * 96 / 200,
@@ -197,11 +197,5 @@ public class MainFrame extends JFrame {
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         setLayout(null);
         setVisible(true);
-    }
-
-    public static void main(String[] args) {
-        int[] size = {600, 800};
-        String title = "Financial Ledger";
-        new MainFrame(size, title);
     }
 }
