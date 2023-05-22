@@ -5,12 +5,14 @@ public class MainFrame extends JFrame {
 
     private int[] frameSize = {0, 0}; // Stores size of the frame
     private String frameTitle; // Stores name of the frame
-    public MainFrame(int[] size, String title)
+    String userID;
+    public MainFrame(int[] size, String title, String ID)
     {
-        // Get frame's size and title as parameter and use them for setting the frame
+        // Get frame's size, title, and userID as parameter and use them for setting the frame
         frameSize[0] = size[0];
         frameSize[1] = size[1];
         frameTitle = title;
+        userID = ID;
 
         JPanel headerPanel = new JPanel(); // Stores header panel
         headerPanel.setLayout(null); // Layout set to null in order to place components based on coordinates
