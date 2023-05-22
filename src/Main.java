@@ -1,5 +1,7 @@
 public class Main {
     public static void main(String[] args) {
-        System.out.println("Hello world!");
+        int[] size = {600, 800};
+        String title = "Financial Ledger";
+        new LogInFrame(size, title);
     }
 }
