@@ -164,7 +164,7 @@ public class RegisterFrame extends JFrame {
                         throw new InvalidInputException(); // Throw exception if user input (ID) is not valid
                     }
                 } catch (InvalidInputException ex) {
-                    JOptionPane.showMessageDialog(null, "User ID must be 8-12 characters/numbers!", "Wrong ID Format", JOptionPane.WARNING_MESSAGE);
+                    JOptionPane.showMessageDialog(null, "User ID must be 8-12 characters/numbers!", "ID Error", JOptionPane.WARNING_MESSAGE);
                     return;
                 }
 
@@ -177,6 +177,7 @@ public class RegisterFrame extends JFrame {
                     if(user.equals(IDField.getText())) // If ID already exists,
                     {
                         userExists = true; // Turn userExist variable to true
+                        break;
                     }
                 }
                 if(!userExists) // If user ID doesn't exist, create directory and text file that contains user's password
@@ -187,7 +188,7 @@ public class RegisterFrame extends JFrame {
                         }
                     } catch (InvalidInputException ex) {
                         String errorMsg = "1. Password must be between 8-12 characters\n2. Password must contain at least 1 alphabet/number\n3. Password must contain at least 1 special character";
-                        JOptionPane.showMessageDialog(null, errorMsg, "Wrong Password Format", JOptionPane.WARNING_MESSAGE);
+                        JOptionPane.showMessageDialog(null, errorMsg, "Password Error", JOptionPane.WARNING_MESSAGE);
                         return;
                     }
 
@@ -223,7 +224,7 @@ public class RegisterFrame extends JFrame {
                 }
                 else // If user entered an existing ID
                 {
-                    JOptionPane.showMessageDialog(null, "ID already exists!", "Wrong ID Format", JOptionPane.WARNING_MESSAGE);
+                    JOptionPane.showMessageDialog(null, "ID already exists!", "ID Error", JOptionPane.WARNING_MESSAGE);
                     return;
                 }
                 new LogInFrame(frameSize, title); // Create register frame
