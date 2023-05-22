@@ -108,24 +108,33 @@ public class MainFrame extends JFrame {
         summaryPanel.add(totalPanel);
 
 
-
         // 해결책) https://woongbin96.tistory.com/105
+
+//        JPanel outerPanel = new JPanel();
+
         JPanel mainPanel = new JPanel(); // Stores main panel where all the spending details will be displayed
-        mainPanel.setLayout(null); // Layout set to null in order to place components based on coordinates
+        mainPanel.setLayout(new GridBagLayout()); // Layout set to null in order to place components based on coordinates
+        GridBagConstraints constraints = new GridBagConstraints();
+        constraints.weightx = 1.0;
+        constraints.weighty = 1.0;
+
+        constraints.fill = GridBagConstraints.BOTH;
+
         for(int i = 0; i < 100; i++)
         {
+            constraints.gridx = 0;
+            constraints.gridy = i;
+            constraints.gridwidth = 1;
+            constraints.gridheight = 1;
             JPanel tempPanel = new JPanel();
-            tempPanel.setBounds(
-                    0,
-                    frameSize[1] * i / 10,
-                    frameSize[0] * 95 / 100,
-                    frameSize[1] / 10
-            );
+            tempPanel.setPreferredSize(new Dimension(frameSize[0] * 95 / 100, frameSize[1] * 2 / 30));
             tempPanel.setBorder(BorderFactory.createLineBorder(Color.black));
             JLabel tempLabel = new JLabel(String.valueOf(i));
             tempPanel.add(tempLabel);
-            mainPanel.add(tempPanel);
+            mainPanel.add(tempPanel, constraints);
         }
+
+//        outerPanel.add(innerPanel);
 
         JScrollPane scrollPane = new JScrollPane(mainPanel, ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
         // Set bound based on frame size
@@ -199,5 +208,10 @@ public class MainFrame extends JFrame {
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         setLayout(null);
         setVisible(true);
+    }
+
+    public static void main(String[] args) {
+        int[] size = {600, 800};
+        new MainFrame(size, "Hi", "ID");
     }
 }
