@@ -7,12 +7,18 @@ import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.Arrays;
+import java.util.Base64;
 import java.util.Scanner;
 
 public class LogInFrame extends JFrame {
 
     private int[] frameSize = {0, 0}; // Stores size of the frame
     private String frameTitle; // Stores name of the frame
+
+    private String decoder(String password)
+    {
+        return new String(Base64.getDecoder().decode(password));
+    }
 
     public LogInFrame(int[] size, String title) // Constructor for login frame
     {
@@ -122,7 +128,7 @@ public class LogInFrame extends JFrame {
                         System.err.println("Failed to read password file!" + ex.getMessage());
                     }
 
-                    if(PWField.getText().equals(password)) // If user entered the correct password
+                    if(PWField.getText().equals(decoder(password))) // If user entered the correct password
                     {
                         new MainFrame(frameSize, frameTitle, IDField.getText());
                         dispose();
