@@ -107,34 +107,30 @@ public class MainFrame extends JFrame {
         totalPanel.setBorder(BorderFactory.createLineBorder(Color.black)); // Create border (black line)
         summaryPanel.add(totalPanel);
 
-
-        // 해결책) https://woongbin96.tistory.com/105
-
-//        JPanel outerPanel = new JPanel();
-
         JPanel mainPanel = new JPanel(); // Stores main panel where all the spending details will be displayed
-        mainPanel.setLayout(new GridBagLayout()); // Layout set to null in order to place components based on coordinates
-        GridBagConstraints constraints = new GridBagConstraints();
+        mainPanel.setLayout(new GridBagLayout()); // Layout set to GridBagLayout in order to place components in a row
+        GridBagConstraints constraints = new GridBagConstraints(); // Store constraints for GridBagLayout
         constraints.weightx = 1.0;
         constraints.weighty = 1.0;
 
-        constraints.fill = GridBagConstraints.BOTH;
+        constraints.fill = GridBagConstraints.BOTH; // The component of mainPanel fills the whole panel
 
         for(int i = 0; i < 100; i++)
         {
-            constraints.gridx = 0;
-            constraints.gridy = i;
+            constraints.gridx = 0; // Set to 0 as there's one component in a column
+            constraints.gridy = i; // Set to i as components would line up in a row
             constraints.gridwidth = 1;
             constraints.gridheight = 1;
+
             JPanel tempPanel = new JPanel();
             tempPanel.setPreferredSize(new Dimension(frameSize[0] * 95 / 100, frameSize[1] * 2 / 30));
             tempPanel.setBorder(BorderFactory.createLineBorder(Color.black));
+
             JLabel tempLabel = new JLabel(String.valueOf(i));
             tempPanel.add(tempLabel);
+
             mainPanel.add(tempPanel, constraints);
         }
-
-//        outerPanel.add(innerPanel);
 
         JScrollPane scrollPane = new JScrollPane(mainPanel, ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
         // Set bound based on frame size
@@ -144,6 +140,7 @@ public class MainFrame extends JFrame {
                 frameSize[0] * 193 / 200,
                 frameSize[1] * 63 / 100
         );
+        scrollPane.getVerticalScrollBar().setUnitIncrement(10); // Adjust scroll speed
         add(scrollPane);
 
         JPanel buttonPanel = new JPanel(); // Stores button panel that displays buttons for additional functions
@@ -208,10 +205,5 @@ public class MainFrame extends JFrame {
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         setLayout(null);
         setVisible(true);
-    }
-
-    public static void main(String[] args) {
-        int[] size = {600, 800};
-        new MainFrame(size, "Hi", "ID");
     }
 }
