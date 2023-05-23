@@ -1,11 +1,61 @@
 import javax.swing.*;
 import java.awt.*;
+import java.text.NumberFormat;
 
 public class MainFrame extends JFrame {
 
     private int[] frameSize = {0, 0}; // Stores size of the frame
     private String frameTitle; // Stores name of the frame
-    String userID;
+    String userID; // Stores ID of the user so that the folder could be accessed
+    private Color[] amountColor = {Color.BLUE, Color.RED}; // Stores color of saving/spending label
+
+    private JPanel createRecordPanel(String category, String description, int isSpending, int amount)
+    {
+        JPanel recordPanel = new JPanel(); // Store panel of each record
+        recordPanel.setLayout(null); // Set layout to null
+        recordPanel.setPreferredSize(new Dimension(frameSize[0] * 95 / 100, frameSize[1] / 15));
+        recordPanel.setBorder(BorderFactory.createLineBorder(Color.black));
+
+        JLabel categoryLabel = new JLabel(category); // Store label for displaying category
+        // Set bounds based on frame size
+        categoryLabel.setBounds(
+                frameSize[0] / 60,
+                0,
+                frameSize[0] / 5,
+                frameSize[1] / 15
+        );
+        categoryLabel.setVerticalAlignment(JLabel.CENTER); // Set vertical alignment to center
+        categoryLabel.setFont(new Font("Arial", Font.BOLD, 12)); // Set font
+        recordPanel.add(categoryLabel);
+
+        JLabel descriptionLabel = new JLabel(description); // Store label for displaying description
+        // Set bounds based on frame size
+        descriptionLabel.setBounds(
+                frameSize[0] / 60 + frameSize[0] / 5,
+                0,
+                frameSize[0] * 2 / 5,
+                frameSize[1] / 15
+        );
+        descriptionLabel.setVerticalAlignment(JLabel.CENTER); // Set vertical alignment to center
+        descriptionLabel.setFont(new Font("Arial", Font.BOLD, 12)); // Set font
+        recordPanel.add(descriptionLabel);
+
+        JLabel amountLabel = new JLabel(NumberFormat.getInstance().format(amount)); // Store label for displaying amount
+        // Set bounds based on frame size
+        amountLabel.setBounds(
+                frameSize[0] / 60 + frameSize[0] * 3 / 5 + (frameSize[0] * isSpending / 5),
+                0,
+                frameSize[0] * 1 / 5,
+                frameSize[1] / 15
+        );
+        amountLabel.setVerticalAlignment(JLabel.CENTER); // Set vertical alignment to center
+        amountLabel.setFont(new Font("Arial", Font.BOLD, 12)); // Set font
+        amountLabel.setForeground(amountColor[isSpending]);
+        recordPanel.add(amountLabel);
+
+        return recordPanel;
+    }
+
     public MainFrame(int[] size, String title, String ID)
     {
         // Get frame's size, title, and userID as parameter and use them for setting the frame
@@ -122,12 +172,9 @@ public class MainFrame extends JFrame {
             constraints.gridwidth = 1;
             constraints.gridheight = 1;
 
-            JPanel tempPanel = new JPanel();
-            tempPanel.setPreferredSize(new Dimension(frameSize[0] * 95 / 100, frameSize[1] * 2 / 30));
-            tempPanel.setBorder(BorderFactory.createLineBorder(Color.black));
+            int isSpending = (i % 2 == 0 ? 0 : 1); // 0: saving, 1: spending
 
-            JLabel tempLabel = new JLabel(String.valueOf(i));
-            tempPanel.add(tempLabel);
+            JPanel tempPanel = createRecordPanel("Entertainment", "Baseball game held in Olympic Stadium", 1, 100000);
 
             mainPanel.add(tempPanel, constraints);
         }
@@ -205,5 +252,11 @@ public class MainFrame extends JFrame {
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         setLayout(null);
         setVisible(true);
+    }
+
+    public static void main(String[] args) {
+        int[] size = {600, 800};
+        String title = "Financial Ledger";
+        new MainFrame(size, title, "ID");
     }
 }
