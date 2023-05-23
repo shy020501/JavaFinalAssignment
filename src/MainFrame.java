@@ -1,6 +1,9 @@
+import com.sun.istack.internal.Nullable;
+
 import javax.swing.*;
 import java.awt.*;
 import java.text.NumberFormat;
+import java.util.regex.Pattern;
 
 public class MainFrame extends JFrame {
 
@@ -8,6 +11,7 @@ public class MainFrame extends JFrame {
     private String frameTitle; // Stores name of the frame
     String userID; // Stores ID of the user so that the folder could be accessed
     private Color[] amountColor = {Color.BLUE, Color.RED}; // Stores color of saving/spending label
+    private Color themeColor = new Color(240, 135, 132);
 
     private JPanel createRecordPanel(String category, String description, int isSpending, int amount)
     {
@@ -15,18 +19,21 @@ public class MainFrame extends JFrame {
         recordPanel.setLayout(null); // Set layout to null
         recordPanel.setPreferredSize(new Dimension(frameSize[0] * 95 / 100, frameSize[1] / 15));
         recordPanel.setBorder(BorderFactory.createLineBorder(Color.black));
+        recordPanel.setBackground(Color.white); // Set background to while
 
-        JLabel categoryLabel = new JLabel(category); // Store label for displaying category
-        // Set bounds based on frame size
-        categoryLabel.setBounds(
-                frameSize[0] / 60,
-                0,
-                frameSize[0] / 5,
-                frameSize[1] / 15
-        );
-        categoryLabel.setVerticalAlignment(JLabel.CENTER); // Set vertical alignment to center
-        categoryLabel.setFont(new Font("Arial", Font.BOLD, 12)); // Set font
-        recordPanel.add(categoryLabel);
+        if(category != null) {
+            JLabel categoryLabel = new JLabel(category); // Store label for displaying category
+            // Set bounds based on frame size
+            categoryLabel.setBounds(
+                    frameSize[0] / 60,
+                    0,
+                    frameSize[0] / 5,
+                    frameSize[1] / 15
+            );
+            categoryLabel.setVerticalAlignment(JLabel.CENTER); // Set vertical alignment to center
+            categoryLabel.setFont(new Font("Arial", Font.BOLD, 12)); // Set font
+            recordPanel.add(categoryLabel);
+        }
 
         JLabel descriptionLabel = new JLabel(description); // Store label for displaying description
         // Set bounds based on frame size
@@ -73,6 +80,7 @@ public class MainFrame extends JFrame {
                 frameSize[1] / 10
         );
         headerPanel.setBorder(BorderFactory.createLineBorder(Color.black));
+        headerPanel.setBackground(themeColor); // Change background color to theme color
         add(headerPanel);
 
         JLabel monthLabel = new JLabel("January"); // Stores label for displaying month
@@ -85,6 +93,7 @@ public class MainFrame extends JFrame {
         );
         monthLabel.setHorizontalAlignment(JLabel.CENTER); // Set horizontal alignment to center
         monthLabel.setFont(new Font("Arial", Font.BOLD, 25)); // Change font
+        monthLabel.setForeground(Color.white); // Set text color to white
         headerPanel.add(monthLabel);
 
         JButton prevMonthButton = new JButton("<"); // Stores button for moving on to the previous month
@@ -96,6 +105,9 @@ public class MainFrame extends JFrame {
                 frameSize[1] / 17
                 );
         prevMonthButton.setFont(new Font("Arial", Font.BOLD, 20)); // Change font
+        prevMonthButton.setBackground(themeColor); // Set background to white
+        prevMonthButton.setForeground(Color.white); // Set text color to white
+        prevMonthButton.setBorder(BorderFactory.createLineBorder(themeColor)); // Set border of the button to theme color
         headerPanel.add(prevMonthButton);
 
         JButton nextMonthButton = new JButton(">"); // Stores button for moving on to the next month
@@ -107,6 +119,9 @@ public class MainFrame extends JFrame {
                 frameSize[1] / 17
         );
         nextMonthButton.setFont(new Font("Arial", Font.BOLD, 20)); // Change font
+        nextMonthButton.setBackground(themeColor); // Set background to white
+        nextMonthButton.setForeground(Color.white); // Set text color to white
+        nextMonthButton.setBorder(BorderFactory.createLineBorder(themeColor)); // Set border of the button to theme color
         headerPanel.add(nextMonthButton);
 
         JPanel summaryPanel = new JPanel(); // Stores summary panel that displays spendings, savings, and total spending
@@ -131,6 +146,7 @@ public class MainFrame extends JFrame {
                 frameSize[1] / 10
         );
         spendingPanel.setBorder(BorderFactory.createLineBorder(Color.black)); // Create border (black line)
+        spendingPanel.setBackground(Color.white); // Set background to while
         summaryPanel.add(spendingPanel);
 
         JPanel savingPanel = new JPanel(); // Stores spending that displays savings
@@ -143,6 +159,7 @@ public class MainFrame extends JFrame {
                 frameSize[1] / 10
         );
         savingPanel.setBorder(BorderFactory.createLineBorder(Color.black)); // Create border (black line)
+        savingPanel.setBackground(Color.white); // Set background to while
         summaryPanel.add(savingPanel);
 
         JPanel totalPanel = new JPanel(); // Stores spending that displays total spending
@@ -155,6 +172,7 @@ public class MainFrame extends JFrame {
                 frameSize[1] / 10
         );
         totalPanel.setBorder(BorderFactory.createLineBorder(Color.black)); // Create border (black line)
+        totalPanel.setBackground(Color.white); // Set background to while
         summaryPanel.add(totalPanel);
 
         JPanel mainPanel = new JPanel(); // Stores main panel where all the spending details will be displayed
@@ -174,7 +192,7 @@ public class MainFrame extends JFrame {
 
             int isSpending = (i % 2 == 0 ? 0 : 1); // 0: saving, 1: spending
 
-            JPanel tempPanel = createRecordPanel("Entertainment", "Baseball game held in Olympic Stadium", 1, 100000);
+            JPanel tempPanel = createRecordPanel(null, "Baseball game held in Olympic Stadium", 1, 100000);
 
             mainPanel.add(tempPanel, constraints);
         }
@@ -211,6 +229,9 @@ public class MainFrame extends JFrame {
                 frameSize[1] / 10
         );
         mainButton.setFont(new Font("Arial", Font.BOLD, 20));
+        mainButton.setBackground(themeColor); // Set button's color to theme color
+        mainButton.setForeground(Color.white); // Set text color to white;
+        mainButton.setBorder(BorderFactory.createLineBorder(Color.white)); // Set border of the button to white
         buttonPanel.add(mainButton);
 
         JButton analysisButton = new JButton("Analysis"); // Button that moves to main frame
@@ -222,6 +243,9 @@ public class MainFrame extends JFrame {
                 frameSize[1] / 10
         );
         analysisButton.setFont(new Font("Arial", Font.BOLD, 20));
+        analysisButton.setBackground(themeColor); // Set button's color to theme color
+        analysisButton.setForeground(Color.white); // Set text color to white
+        analysisButton.setBorder(BorderFactory.createLineBorder(Color.white)); // Set border of the button to white
         buttonPanel.add(analysisButton);
 
         JButton assetButton = new JButton("Asset"); // Button that moves to main frame
@@ -233,6 +257,9 @@ public class MainFrame extends JFrame {
                 frameSize[1] / 10
         );
         assetButton.setFont(new Font("Arial", Font.BOLD, 20));
+        assetButton.setBackground(themeColor); // Set button's color to theme color
+        assetButton.setForeground(Color.white); // Set text color to white
+        assetButton.setBorder(BorderFactory.createLineBorder(Color.white)); // Set border of the button to white
         buttonPanel.add(assetButton);
 
         JButton addButton = new JButton("Add"); // Button that moves to main frame
@@ -244,6 +271,9 @@ public class MainFrame extends JFrame {
                 frameSize[1] / 10
         );
         addButton.setFont(new Font("Arial", Font.BOLD, 20));
+        addButton.setBackground(themeColor); // Set button's color to theme color
+        addButton.setForeground(Color.white); // Set text color to white
+        addButton.setBorder(BorderFactory.createLineBorder(Color.white)); // Set border of the button to white
         buttonPanel.add(addButton);
 
         // Settings for frame
