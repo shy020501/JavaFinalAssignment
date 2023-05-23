@@ -255,7 +255,7 @@ public class AddFrame extends JFrame {
                 frameSize[1] * 9 / 10
         );
 
-        JLabel dateLabel2 = new JLabel("Data"); // Label for displaying date (saving screen)
+        JLabel dateLabel2 = new JLabel("Date"); // Label for displaying date (saving screen)
         // Set bound based on frame size
         dateLabel2.setBounds(
                 frameSize[0] / 10,
