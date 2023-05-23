@@ -2,6 +2,8 @@ import com.sun.istack.internal.Nullable;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.text.NumberFormat;
 import java.util.regex.Pattern;
 
@@ -274,6 +276,13 @@ public class MainFrame extends JFrame {
         addButton.setBackground(themeColor); // Set button's color to theme color
         addButton.setForeground(Color.white); // Set text color to white
         addButton.setBorder(BorderFactory.createLineBorder(Color.white)); // Set border of the button to white
+        addButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                new AddFrame(frameSize, frameTitle, ID);
+                dispose();
+            }
+        });
         buttonPanel.add(addButton);
 
         // Settings for frame
