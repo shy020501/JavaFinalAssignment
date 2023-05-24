@@ -5,8 +5,7 @@ import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.File;
-import java.io.FileNotFoundException;
+import java.io.*;
 import java.text.NumberFormat;
 import java.util.Arrays;
 import java.util.Collection;
@@ -26,6 +25,49 @@ public class MainFrame extends JFrame {
     private int currentMonth = 11; // Stores the month the user is looking at
     private int currentYear = 2023; // Stores the year the user is looking at
     private String[] month = {"January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"};
+
+    private void deleteRecord(String dir, String fileName, String data)
+    {
+        File inputFile = new File(dir + fileName); // Get original file
+        File tempFile = new File(dir + "tempFile.txt"); // Create temp file for storing data after deletion
+
+        try {
+            BufferedReader reader = new BufferedReader(new FileReader(inputFile));
+            BufferedWriter writer = new BufferedWriter(new FileWriter(tempFile));
+            String currentLine;
+            while((currentLine = reader.readLine()) != null)
+            {
+                String trimmedLine = currentLine.trim(); // Get current line
+                if(trimmedLine.equals(data)) continue; // If current line is line to be removed, don't run the code below
+                writer.write(currentLine + System.getProperty("line.separator"));
+            }
+            writer.close();
+            reader.close();
+        } catch (FileNotFoundException ex) {
+            System.err.println(dir + fileName + " file not found!"); // When input file is not found
+        } catch (IOException ex) {
+            ex.printStackTrace(); // When problem arises for writing file
+        }
+
+        // Write contents of temp file to input file
+        try {
+            BufferedReader reader = new BufferedReader(new FileReader(tempFile));
+            BufferedWriter writer = new BufferedWriter(new FileWriter(inputFile));
+            String currentLine;
+            while((currentLine = reader.readLine()) != null)
+            {
+                writer.write(currentLine + System.getProperty("line.separator"));
+            }
+            writer.close();
+            reader.close();
+        } catch (FileNotFoundException ex) {
+            System.err.println(dir + fileName + " file not found!"); // When temp file is not found
+        } catch (IOException ex) {
+            ex.printStackTrace(); // When problem arises for writing file
+        }
+
+        tempFile.delete();
+    }
 
     private JPanel createDatePanel(String date)
     {
@@ -62,7 +104,7 @@ public class MainFrame extends JFrame {
 
         return datePanel;
     }
-    private JPanel createRecordPanel(String category, String description, int isSpending, int amount) // Create panel for user records
+    private JPanel createRecordPanel(String fileName, String category, String description, int isSpending, int amount, String ID) // Create panel for user records
     {
         JPanel recordPanel = new JPanel(); // Store panel of each record
         recordPanel.setLayout(null); // Set layout to null
@@ -85,7 +127,14 @@ public class MainFrame extends JFrame {
         editButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                System.out.println("Check click");
+                String dir = "src/userInfo/" + ID + "/" + currentYear + "/" + currentMonth + "/";
+                String date = currentMonth + "/" + fileName.substring(0, 2) + "/" + currentYear;
+                String removeData = String.valueOf(isSpending) + " " + description + " " + String.valueOf(amount) + " " + category; // Store line to be deleted
+
+                deleteRecord(dir, fileName, removeData);
+                AddFrame addFrame = new AddFrame(frameSize, frameTitle, ID);
+                addFrame.setFieldText(date, description, String.valueOf(amount));
+                dispose();
             }
         });
         recordPanel.add(editButton);
@@ -248,7 +297,7 @@ public class MainFrame extends JFrame {
         constraints.weightx = 1.0;
         constraints.weighty = 1.0;
 
-        constraints.fill = GridBagConstraints.BOTH; // The component of mainPanel fills the whole panel
+        constraints.fill = GridBagConstraints.HORIZONTAL; // The component of mainPanel fills the horizontal axis
 
 
         // Get directory of current year and month
@@ -260,7 +309,7 @@ public class MainFrame extends JFrame {
             String[] records = dir.list(); // Get all the text files(day) in the directory
             Collections.reverse(Arrays.asList(records)); // Reverse the array so that the latest record would be shown on top
 
-            for(String record : records)
+            for(String record : records) // Loop through each text file (record is name of each text file)
             {
                 constraints.gridx = 0; // Set to 0 as there's one component in a column
                 constraints.gridy = count; // Set to i as components would line up in a row
@@ -288,7 +337,7 @@ public class MainFrame extends JFrame {
                         constraints.gridheight = 1;
 
                         count += 1; // Increment count by 1
-                        tempPanel = createRecordPanel(category, data[1], Integer.parseInt(data[0]), Integer.parseInt(data[2]));
+                        tempPanel = createRecordPanel(record, category, data[1], Integer.parseInt(data[0]), Integer.parseInt(data[2]), ID);
                         mainPanel.add(tempPanel, constraints);
                     }
                 } catch (FileNotFoundException ex) {
