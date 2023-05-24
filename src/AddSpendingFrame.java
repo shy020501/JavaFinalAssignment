@@ -13,12 +13,6 @@ public class AddSpendingFrame extends AddFrame {
     private String[] categories = {"Food", "Transport", "Entertainment", "Clothes", "Healthcare", "Education", "Housing", "Condolences", "Etc"};
     private int isSpending = 1; // 0: Saving, 1: Spending
 
-    public void setFieldText(String date, String description, String amount) // Setter for setting text of text fields in spending panel
-    {
-        dateField.setText(date);
-        descriptionField.setText(description);
-        amountField.setText(amount);
-    }
     public AddSpendingFrame(int[] size, String title, String ID)
     {
         super(size, title, ID);

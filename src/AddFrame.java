@@ -11,12 +11,20 @@ public class AddFrame extends JFrame {
     protected String userID; // Stores ID of the user so that the folder could be accessed
     protected Color themeColor = new Color(240, 135, 132);
     private int isSpending; // 0: Saving, 1: Spending
+    protected JPanel headerPanel = new JPanel(); // Store buttons for choosing if the record is spending or saving
     protected JButton savingButton; // Store button for moving on to saving screen
     protected JButton spendingButton; // Store button for moving on to spending screen
 
     protected JTextField dateField = new JTextField();
     protected JTextField descriptionField = new JTextField();
     protected JTextField amountField = new JTextField();
+
+    public void setFieldText(String date, String description, String amount) // Setter for setting text of text fields in spending panel
+    {
+        dateField.setText(date);
+        descriptionField.setText(description);
+        amountField.setText(amount);
+    }
 
     protected boolean isValidDate(String date)
     {
@@ -52,7 +60,6 @@ public class AddFrame extends JFrame {
         frameTitle = title;
         userID = ID;
 
-        JPanel headerPanel = new JPanel(); // Store buttons for choosing if the record is spending or saving
         // Set bounds based on frame size
         headerPanel.setBounds(
                 0,
