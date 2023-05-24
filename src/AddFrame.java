@@ -26,6 +26,9 @@ public class AddFrame extends JFrame {
     private JButton spendingButton; // Store button for moving on to spending screen
     private JPanel savingPanel; // Store panel that has components for saving record
     private JPanel spendingPanel; // Store panel that has components for spending record
+    private JTextField dateField1;
+    private JTextField descriptionField1;
+    private JTextField amountField1;
     // Store categories for spending record
     private String[] categories = {"Food", "Transport", "Entertainment", "Clothes", "Healthcare", "Education", "Housing", "Condolences", "Etc"};
 
@@ -53,6 +56,13 @@ public class AddFrame extends JFrame {
             valid = true;
         }
         return valid;
+    }
+
+    public void setFieldText(String date, String description, String amount) // Setter for setting text of text fields in spending panel
+    {
+        dateField1.setText(date);
+        descriptionField1.setText(description);
+        amountField1.setText(amount);
     }
 
     public AddFrame(int[] size, String title, String ID)
@@ -83,7 +93,7 @@ public class AddFrame extends JFrame {
         dateLabel1.setFont(new Font("Arial", Font.BOLD, 20)); // Set font
         dateLabel1.setHorizontalAlignment(JLabel.RIGHT); // Set horizontal alignment to right
 
-        JTextField dateField1 = new JTextField(); // Text field for entering date
+        dateField1 = new JTextField(); // Text field for entering date
         // Set bound based on frame size
         dateField1.setBounds(
                 frameSize[0] * 7 / 20,
@@ -125,7 +135,7 @@ public class AddFrame extends JFrame {
         descriptionLabel1.setFont(new Font("Arial", Font.BOLD, 20)); // Set font
         descriptionLabel1.setHorizontalAlignment(JLabel.RIGHT); // Set horizontal alignment to right
 
-        JTextField descriptionField1 = new JTextField(); // Text field for entering description
+        descriptionField1 = new JTextField(); // Text field for entering description
         // Set bound based on frame size
         descriptionField1.setBounds(
                 frameSize[0] * 7 / 20,
@@ -146,7 +156,7 @@ public class AddFrame extends JFrame {
         amountLabel1.setFont(new Font("Arial", Font.BOLD, 20)); // Set font
         amountLabel1.setHorizontalAlignment(JLabel.RIGHT); // Set horizontal alignment to right
 
-        JTextField amountField1 = new JTextField(); // Text field for entering amount
+        amountField1 = new JTextField(); // Text field for entering amount
         // Set bound based on frame size
         amountField1.setBounds(
                 frameSize[0] * 7 / 20,
