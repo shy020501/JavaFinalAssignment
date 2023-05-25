@@ -1,19 +1,12 @@
-import com.sun.istack.internal.Nullable;
-import com.sun.xml.internal.ws.api.ha.StickyFeature;
-
 import javax.swing.*;
-import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.*;
 import java.nio.file.Files;
-import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.text.NumberFormat;
-import java.text.SimpleDateFormat;
 import java.util.*;
-import java.util.regex.Pattern;
 
 public class MainFrame extends JFrame {
 
