@@ -23,7 +23,7 @@ public class AddSpendingFrame extends AddFrame {
         // Set bound based on frame size
         dateLabel.setBounds(
                 frameSize[0] / 10,
-                frameSize[1] / 10,
+                frameSize[1] * 2 / 10,
                 frameSize[0] / 5,
                 frameSize[1] / 15
         );
@@ -33,7 +33,7 @@ public class AddSpendingFrame extends AddFrame {
         // Set bound based on frame size
         dateField.setBounds(
                 frameSize[0] * 7 / 20,
-                frameSize[1] * 23 / 200,
+                frameSize[1] * 23 / 200 + frameSize[1] / 10,
                 frameSize[0] * 27 / 60,
                 frameSize[1] / 25
         );
@@ -43,7 +43,7 @@ public class AddSpendingFrame extends AddFrame {
         // Set bound based on frame size
         categoryLabel.setBounds(
                 frameSize[0] / 10,
-                frameSize[1] * 2 / 10 ,
+                frameSize[1] * 3 / 10 ,
                 frameSize[0] / 5,
                 frameSize[1] / 15
         );
@@ -54,7 +54,7 @@ public class AddSpendingFrame extends AddFrame {
         // Set bound based on frame size
         categoryBox.setBounds(
                 frameSize[0] * 7 / 20,
-                frameSize[1] * 23 / 200 + frameSize[1] / 10,
+                frameSize[1] * 23 / 200 + frameSize[1] * 2 / 10,
                 frameSize[0] * 27 / 60,
                 frameSize[1] / 25
         );
@@ -64,7 +64,7 @@ public class AddSpendingFrame extends AddFrame {
         // Set bound based on frame size
         descriptionLabel.setBounds(
                 frameSize[0] / 10,
-                frameSize[1] * 3 / 10 ,
+                frameSize[1] * 4 / 10 ,
                 frameSize[0] / 5,
                 frameSize[1] / 15
         );
@@ -74,7 +74,7 @@ public class AddSpendingFrame extends AddFrame {
         // Set bound based on frame size
         descriptionField.setBounds(
                 frameSize[0] * 7 / 20,
-                frameSize[1] * 23 / 200 + frameSize[1] * 2 / 10,
+                frameSize[1] * 23 / 200 + frameSize[1] * 3 / 10,
                 frameSize[0] * 27 / 60,
                 frameSize[1] / 25
         );
@@ -84,7 +84,7 @@ public class AddSpendingFrame extends AddFrame {
         // Set bound based on frame size
         amountLabel.setBounds(
                 frameSize[0] / 10,
-                frameSize[1] * 4 / 10 ,
+                frameSize[1] * 5 / 10 ,
                 frameSize[0] / 5,
                 frameSize[1] / 15
         );
@@ -94,7 +94,7 @@ public class AddSpendingFrame extends AddFrame {
         // Set bound based on frame size
         amountField.setBounds(
                 frameSize[0] * 7 / 20,
-                frameSize[1] * 23 / 200 + frameSize[1] * 3 / 10,
+                frameSize[1] * 23 / 200 + frameSize[1] * 4 / 10,
                 frameSize[0] * 27 / 60,
                 frameSize[1] / 25
         );
@@ -104,7 +104,7 @@ public class AddSpendingFrame extends AddFrame {
         // Set bound based on frame size
         saveButton.setBounds(
                 frameSize[0] * 39 / 60,
-                frameSize[1] * 23 / 200 + frameSize[1] * 4 / 10,
+                frameSize[1] * 23 / 200 + frameSize[1] * 5 / 10,
                 frameSize[0] * 9 / 60,
                 frameSize[1] / 23
         );
@@ -133,6 +133,11 @@ public class AddSpendingFrame extends AddFrame {
                 } catch (InvalidDigitException ex) {
                     errorCnt += 1; // Increment error count
                     errorMsg += (String.valueOf(errorCnt) + ". Amount must be digit only!\n");
+                }
+
+                if(descriptionField.getText().equals("")) {
+                    errorCnt += 1; // Increment error count
+                    errorMsg += (String.valueOf(errorCnt) + ". Description should not be empty!\n");
                 }
 
                 if(errorCnt != 0) // If there is an error
