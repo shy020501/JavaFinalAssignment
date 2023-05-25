@@ -26,7 +26,9 @@ public class MainFrame extends JFrame {
         File dateFile = new File("src/userInfo/" + userID + "/dateFile.txt");
         try {
             BufferedWriter writer = new BufferedWriter(new FileWriter(dateFile));
-            writer.write(String.valueOf(month) + " " + String.valueOf(year)); // Store month and date
+            String StringMonth = String.valueOf(month);
+            if(StringMonth.length() == 1) StringMonth = "0" + StringMonth; // If month is 1~9, change it to 01~09
+            writer.write(StringMonth + " " + String.valueOf(year)); // Store month and date
             writer.close();
         } catch (IOException e) {
             e.printStackTrace();
@@ -71,7 +73,9 @@ public class MainFrame extends JFrame {
             while((currentLine = reader.readLine()) != null)
             {
                 String trimmedLine = currentLine.trim(); // Get current line
-                if(trimmedLine.equals(data)) continue; // If current line is line to be removed, don't run the code below
+                if(trimmedLine.equals(data)) {
+                    continue; // If current line is line to be removed, don't run the code below
+                }
                 writer.write(currentLine + System.getProperty("line.separator"));
             }
             writer.close();
@@ -160,9 +164,11 @@ public class MainFrame extends JFrame {
         editButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                String dir = "src/userInfo/" + ID + "/" + currentYear + "/" + currentMonth + "/";
-                String date = currentMonth + "/" + fileName.substring(0, 2) + "/" + currentYear;
-                String removeData = String.valueOf(isSpending) + " " + description + " " + String.valueOf(amount) + " " + category; // Store line to be deleted
+                String month = String.valueOf(currentMonth);
+                if(month.length() == 1) month = "0" + month;
+                String dir = "src/userInfo/" + ID + "/" + currentYear + "/" + month + "/";
+                String date = month + "/" + fileName.substring(0, 2) + "/" + currentYear;
+                String removeData = String.valueOf(isSpending) + " " + category  + " " + String.valueOf(amount)+ " " + description; // Store line to be deleted
 
                 deleteRecord(dir, fileName, removeData);
                 if(isSpending == 1) new EditSpendingFrame(frameSize, frameTitle, ID, date, description, String.valueOf(amount)); // If the panel stores spending record, open edit window for spending record
@@ -210,6 +216,15 @@ public class MainFrame extends JFrame {
         recordPanel.add(amountLabel);
 
         return recordPanel;
+    }
+
+    private JPanel createEmptyPanel()
+    {
+        JPanel emptyPanel = new JPanel(); // Store panel of each record
+        emptyPanel.setLayout(null); // Set layout to null
+        emptyPanel.setPreferredSize(new Dimension(frameSize[0] * 95 / 100, frameSize[1] / 15));
+
+        return emptyPanel;
     }
 
     public MainFrame(int[] size, String title, String ID)
@@ -313,9 +328,12 @@ public class MainFrame extends JFrame {
 
         constraints.fill = GridBagConstraints.HORIZONTAL; // The component of mainPanel fills the horizontal axis
 
+        // Convert month to string
+        String month = String.valueOf(currentMonth);
+        if(month.length() == 1) month = "0" + month;
 
         // Get directory of current year and month
-        String currentDir = "src/userInfo/" + ID + "/" + String.valueOf(currentYear) + "/" + String.valueOf(currentMonth) + "/";
+        String currentDir = "src/userInfo/" + ID + "/" + String.valueOf(currentYear) + "/" + month + "/";
         File dir = new File(currentDir);
         int count = 0;
         if(dir.exists()) // If such directory exists
@@ -326,39 +344,67 @@ public class MainFrame extends JFrame {
             for(String record : records) // Loop through each text file (record is name of each text file)
             {
                 if(record.equals("tempFile.txt")) continue; // Don't display temp file
-                constraints.gridx = 0; // Set to 0 as there's one component in a column
-                constraints.gridy = count; // Set to i as components would line up in a row
-                constraints.gridwidth = 1;
-                constraints.gridheight = 1;
-
-                count += 1; // Increment count by 1
-
-                JPanel tempPanel = createDatePanel(record.substring(0, 2));
-                mainPanel.add(tempPanel, constraints);
 
                 File dailyRecord = new File(currentDir + record); // Stores each daily text file
-                try{
-                    Scanner fileReader = new Scanner(dailyRecord); // Create scanner for reading text file
-                    while(fileReader.hasNextLine()){
-                        String rawData = fileReader.nextLine(); // Read next line from text file
-                        String[] data = rawData.split(" "); // Split data inside text file based on space
 
-                        String category = data[3]; // Fill in category
-                        if(data[0].equals("1")) totalSpending += Integer.parseInt(data[2]); // If data is spending record, add to spending
-                        else totalSaving += Integer.parseInt(data[2]); // If data is saving record, add to saving
+                if(dailyRecord.length() != 0)
+                {
+                    constraints.gridx = 0; // Set to 0 as there's one component in a column
+                    constraints.gridy = count; // Set to i as components would line up in a row
+                    constraints.gridwidth = 1;
+                    constraints.gridheight = 1;
 
-                        constraints.gridx = 0; // Set to 0 as there's one component in a column
-                        constraints.gridy = count; // Set to i as components would line up in a row
-                        constraints.gridwidth = 1;
-                        constraints.gridheight = 1;
+                    count += 1; // Increment count by 1
 
-                        count += 1; // Increment count by 1
-                        tempPanel = createRecordPanel(record, category, data[1], Integer.parseInt(data[0]), Integer.parseInt(data[2]), ID);
-                        mainPanel.add(tempPanel, constraints);
+                    JPanel recordPanel = createDatePanel(record.substring(0, 2));
+                    mainPanel.add(recordPanel, constraints);
+
+                    try{
+                        Scanner fileReader = new Scanner(dailyRecord); // Create scanner for reading text file
+                        while(fileReader.hasNextLine()){
+                            String rawData = fileReader.nextLine(); // Read next line from text file
+                            String[] data = rawData.split(" "); // Split data inside text file based on space
+                            // data => isSpending category amount description
+
+                            String category = data[1]; // Fill in category
+                            if(data[0].equals("1")) totalSpending += Integer.parseInt(data[2]); // If data is spending record, add to spending
+                            else totalSaving += Integer.parseInt(data[2]); // If data is saving record, add to saving
+
+                            String description = "";
+                            for(int i = 3; i < data.length; i++)
+                            {
+                                description += data[i]; // Get description from data
+                                if(i != data.length - 1) description += " ";
+                            }
+
+                            constraints.gridx = 0; // Set to 0 as there's one component in a column
+                            constraints.gridy = count; // Set to i as components would line up in a row
+                            constraints.gridwidth = 1;
+                            constraints.gridheight = 1;
+
+                            count += 1; // Increment count by 1
+                            // (String fileName, String category, String description, int isSpending, int amount, String ID)
+                            recordPanel = createRecordPanel(record, category, description, Integer.parseInt(data[0]), Integer.parseInt(data[2]), ID);
+                            mainPanel.add(recordPanel, constraints);
+                        }
+                    } catch (FileNotFoundException ex) {
+                        System.out.println("File not found!");
+                        ex.printStackTrace();
                     }
-                } catch (FileNotFoundException ex) {
-                    System.out.println("File not found!");
-                    ex.printStackTrace();
+                }
+            }
+
+            if(count < 10)
+            {
+                for(int i = 0; i < 10 - count; i++) // Create empty panel (if not layout becomes weird for record panels)
+                {
+                    constraints.gridx = 0; // Set to 0 as there's one component in a column
+                    constraints.gridy = count + 1 + i; // Set to i as components would line up in a row
+                    constraints.gridwidth = 1;
+                    constraints.gridheight = 1;
+
+                    JPanel emptyPanel = createEmptyPanel();
+                    mainPanel.add(emptyPanel, constraints);
                 }
             }
         }
@@ -482,7 +528,7 @@ public class MainFrame extends JFrame {
         totalPanel.setBorder(BorderFactory.createLineBorder(Color.black)); // Create border (black line)
         totalPanel.setBackground(Color.white); // Set background to while
 
-        JLabel totalLabel = new JLabel("Total Saving"); // Store label for total
+        JLabel totalLabel = new JLabel("Total"); // Store label for total
         // Set bound based on frame size
         totalLabel.setBounds(
                 0,
@@ -579,10 +625,5 @@ public class MainFrame extends JFrame {
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         setLayout(null);
         setVisible(true);
-    }
-    public static void main(String[] args) {
-        int[] size = {600, 800};
-        String title = "Financial Ledger";
-        new MainFrame(size, title, "shy020501");
     }
 }
