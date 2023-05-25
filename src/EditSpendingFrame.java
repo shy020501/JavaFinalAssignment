@@ -15,7 +15,7 @@ public class EditSpendingFrame extends AddSpendingFrame{ // Extends AddSpendingF
         JButton deleteButton = new JButton("Delete");
         deleteButton.setBounds(
                 frameSize[0] * 12 / 60,
-                frameSize[1] * 23 / 200 + frameSize[1] * 4 / 10,
+                frameSize[1] * 23 / 200 + frameSize[1] * 5 / 10,
                 frameSize[0] * 9 / 60,
                 frameSize[1] / 23
         );
