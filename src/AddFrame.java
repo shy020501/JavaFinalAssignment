@@ -2,6 +2,8 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -15,9 +17,9 @@ public class AddFrame extends JFrame {
     protected JButton savingButton; // Store button for moving on to saving screen
     protected JButton spendingButton; // Store button for moving on to spending screen
 
-    protected JTextField dateField = new JTextField();
-    protected JTextField descriptionField = new JTextField();
-    protected JTextField amountField = new JTextField();
+    protected JTextField dateField = new JTextField(); // Text field for inputting date
+    protected JTextField descriptionField = new JTextField(); // Text field for inputting description of the record
+    protected JTextField amountField = new JTextField(); // Text field for inputting amount of money spent / saved
 
     public void setFieldText(String date, String description, String amount) // Setter for setting text of text fields in spending panel
     {
@@ -123,6 +125,30 @@ public class AddFrame extends JFrame {
             }
         });
         headerPanel.add(savingButton);
+
+        // Get current date
+        String month = java.time.LocalDate.now().toString().split("-")[1];
+        String year = java.time.LocalDate.now().toString().split("-")[0];
+        String day = java.time.LocalDate.now().toString().split("-")[2];
+        String currentDate = month + "/" + day + "/" + year; // Save date in mm/dd/yyyy form
+
+        dateField.setText(currentDate); // Set default value of date field to current date
+        dateField.addFocusListener(new FocusListener() {
+            @Override
+            public void focusGained(FocusEvent e) { // Deletes contents in the text field if the user clicks the field and has not written anything yet
+                if(dateField.getText().equals(currentDate))
+                {
+                    dateField.setText("");
+                }
+            }
+            @Override
+            public void focusLost(FocusEvent e) { // Show current date in the text field if nothing has been entered and user clicks other components
+                if(dateField.getText().equals(""))
+                {
+                    dateField.setText(currentDate);
+                }
+            }
+        });
 
         // Settings for frame
         setTitle(frameTitle);
