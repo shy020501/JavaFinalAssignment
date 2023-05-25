@@ -20,7 +20,7 @@ public class MainFrame extends JFrame {
     private int currentYear = Integer.parseInt(java.time.LocalDate.now().toString().split("-")[0]);
     private int  currentMonth = Integer.parseInt(java.time.LocalDate.now().toString().split("-")[1]);
     private String[] month = {"January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"};
-
+    private JPanel analysisPanel = new JPanel(); // Stores analysis panel where analysis of spending will be displayed
     private void writeCurrentDate(int month, int year) // Keep record of month & year the user is looking at
     {
         File dateFile = new File("src/userInfo/" + userID + "/dateFile.txt");
@@ -409,16 +409,19 @@ public class MainFrame extends JFrame {
             }
         }
 
-        JScrollPane scrollPane = new JScrollPane(mainPanel, ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+        JScrollPane mainScrollPane = new JScrollPane(mainPanel, ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
         // Set bound based on frame size
-        scrollPane.setBounds(
+        mainScrollPane.setBounds(
                 0,
                 frameSize[1] * 2 / 10,
                 frameSize[0] * 193 / 200,
                 frameSize[1] * 63 / 100
         );
-        scrollPane.getVerticalScrollBar().setUnitIncrement(10); // Adjust scroll speed
-        add(scrollPane);
+        mainScrollPane.getVerticalScrollBar().setUnitIncrement(10); // Adjust scroll speed
+        add(mainScrollPane);
+
+        analysisPanel.setLayout(null); // Layout set to null
+
 
         JPanel summaryPanel = new JPanel(); // Stores summary panel that displays spendings, savings, and total spending
         summaryPanel.setLayout(null); // Layout set to null in order to place components based on coordinates
@@ -582,6 +585,14 @@ public class MainFrame extends JFrame {
         mainButton.setBackground(themeColor); // Set button's color to theme color
         mainButton.setForeground(Color.white); // Set text color to white;
         mainButton.setBorder(BorderFactory.createLineBorder(Color.white)); // Set border of the button to white
+        mainButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                getContentPane().remove(analysisPanel);
+                add(mainScrollPane);
+                repaint();
+            }
+        });
         buttonPanel.add(mainButton);
 
         JButton analysisButton = new JButton("Analysis"); // Button that moves to main frame
@@ -596,6 +607,14 @@ public class MainFrame extends JFrame {
         analysisButton.setBackground(themeColor); // Set button's color to theme color
         analysisButton.setForeground(Color.white); // Set text color to white
         analysisButton.setBorder(BorderFactory.createLineBorder(Color.white)); // Set border of the button to white
+        analysisButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                getContentPane().remove(mainScrollPane);
+                add(analysisPanel);
+                repaint();
+            }
+        });
         buttonPanel.add(analysisButton);
 
         JButton addButton = new JButton("Add"); // Button that moves to main frame
