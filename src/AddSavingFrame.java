@@ -141,8 +141,8 @@ public class AddSavingFrame extends AddFrame {
                     }
                 }
 
-                // Record format: isSpending description amount category(optional)
-                String record = String.valueOf(isSpending) + " " + descriptionField.getText() + " " + amountField.getText() + " Saving\n";
+                // Record format: isSpending category amount description
+                String record = String.valueOf(isSpending) + " Saving " + amountField.getText() + " " + descriptionField.getText() + "\n";
 
                 try(FileWriter fw = new FileWriter(fileDir, true)) // Create file writer, write from the end
                 {

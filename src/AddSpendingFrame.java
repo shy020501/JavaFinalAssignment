@@ -169,8 +169,8 @@ public class AddSpendingFrame extends AddFrame {
                     }
                 }
 
-                // Record format: isSpending description amount category(optional)
-                String record = String.valueOf(isSpending) + " " + descriptionField.getText() + " " + amountField.getText() + " " + categoryBox.getSelectedItem().toString() + "\n";
+                // Record format: isSpending category amount description
+                String record = String.valueOf(isSpending) + " " + categoryBox.getSelectedItem().toString() + " " + amountField.getText() + " " + descriptionField.getText() + "\n";
 
                 try(FileWriter fw = new FileWriter(fileDir, true)) // Create file writer, write from the end
                 {
