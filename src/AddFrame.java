@@ -115,11 +115,6 @@ public class AddFrame extends JFrame {
             public void actionPerformed(ActionEvent e) {
                 isSpending = 0; // Change the state to saving
 
-                // Reset fields of spending panel when moving onto saving panel
-                dateField.setText("");
-                descriptionField.setText("");
-                amountField.setText("");
-
                 new AddSavingFrame(frameSize, frameTitle, ID); // Show saving frame
                 dispose();
             }
