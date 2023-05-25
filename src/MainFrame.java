@@ -1,4 +1,5 @@
 import com.sun.istack.internal.Nullable;
+import com.sun.xml.internal.ws.api.ha.StickyFeature;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
@@ -6,11 +7,12 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.text.NumberFormat;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Scanner;
+import java.text.SimpleDateFormat;
+import java.util.*;
 import java.util.regex.Pattern;
 
 public class MainFrame extends JFrame {
@@ -22,10 +24,48 @@ public class MainFrame extends JFrame {
     private Color themeColor = new Color(240, 135, 132);
     private int totalSpending = 0; // Stores total spending
     private int totalSaving = 0; // Stores total saving
-    private int currentMonth = 11; // Stores the month the user is looking at
-    private int currentYear = 2023; // Stores the year the user is looking at
+    private int currentYear = Integer.parseInt(java.time.LocalDate.now().toString().split("-")[0]);
+    private int  currentMonth = Integer.parseInt(java.time.LocalDate.now().toString().split("-")[1]);
     private String[] month = {"January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"};
 
+    private void writeCurrentDate(int month, int year) // Keep record of month & year the user is looking at
+    {
+        File dateFile = new File("src/userInfo/" + userID + "/dateFile.txt");
+        try {
+            BufferedWriter writer = new BufferedWriter(new FileWriter(dateFile));
+            writer.write(String.valueOf(month) + " " + String.valueOf(year)); // Store month and date
+            writer.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+    private String readCurrentDate() // Get month and year that the user is looking at
+    {
+        String date = "";
+        String path = "src/userInfo/" + userID + "/dateFile.txt";
+        File dateFile = new File(path);
+        if(!dateFile.exists())
+        {
+            try {
+                Files.createFile(Paths.get(path)); // Create file
+            } catch (IOException ex) {
+                ex.printStackTrace();
+            }
+            currentMonth = Integer.parseInt(java.time.LocalDate.now().toString().split("-")[1]);
+            currentYear = Integer.parseInt(java.time.LocalDate.now().toString().split("-")[0]);
+            writeCurrentDate(currentMonth, currentYear); // Write month/year on text file if text file is empty
+        }
+
+        try {
+            BufferedReader reader = new BufferedReader(new FileReader(dateFile));
+            date = reader.readLine();
+            reader.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return date;
+    }
     private void deleteRecord(String dir, String fileName, String data)
     {
         File inputFile = new File(dir + fileName); // Get original file
@@ -132,8 +172,8 @@ public class MainFrame extends JFrame {
                 String removeData = String.valueOf(isSpending) + " " + description + " " + String.valueOf(amount) + " " + category; // Store line to be deleted
 
                 deleteRecord(dir, fileName, removeData);
-                AddFrame addFrame = new AddFrame(frameSize, frameTitle, ID);
-                addFrame.setFieldText(date, description, String.valueOf(amount));
+                if(isSpending == 1) new EditSpendingFrame(frameSize, frameTitle, ID, date, description, String.valueOf(amount)); // If the panel stores spending record, open edit window for spending record
+                else if(isSpending == 0) new EditSavingFrame(frameSize, frameTitle, ID, date, description, String.valueOf(amount)); // If the panel stores spending record, open edit window for saving record
                 dispose();
             }
         });
@@ -187,6 +227,10 @@ public class MainFrame extends JFrame {
         frameTitle = title;
         userID = ID;
 
+        String date = readCurrentDate();
+        currentYear = Integer.parseInt(date.split(" ")[1]);
+        currentMonth = Integer.parseInt(date.split(" ")[0]);
+
         JPanel headerPanel = new JPanel(); // Stores header panel
         headerPanel.setLayout(null); // Layout set to null in order to place components based on coordinates
         headerPanel.setBounds(
@@ -199,7 +243,7 @@ public class MainFrame extends JFrame {
         headerPanel.setBackground(themeColor); // Change background color to theme color
         add(headerPanel);
 
-        JLabel monthLabel = new JLabel("January"); // Stores label for displaying month
+        JLabel monthLabel = new JLabel(month[currentMonth - 1] + " " + currentYear); // Stores label for displaying month
         // Set bound based on frame size
         monthLabel.setBounds(
                 frameSize[1] * 27 / 340,
@@ -224,6 +268,20 @@ public class MainFrame extends JFrame {
         prevMonthButton.setBackground(themeColor); // Set background to white
         prevMonthButton.setForeground(Color.white); // Set text color to white
         prevMonthButton.setBorder(BorderFactory.createLineBorder(themeColor)); // Set border of the button to theme color
+        prevMonthButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                currentMonth -= 1; // Decrease month
+                if(currentMonth == 0) // If month becomes 0, move on to previous year
+                {
+                    currentYear -= 1;
+                    currentMonth = 12;
+                }
+                writeCurrentDate(currentMonth, currentYear);
+                new MainFrame(frameSize, frameTitle, ID);
+                dispose();
+            }
+        });
         headerPanel.add(prevMonthButton);
 
         JButton nextMonthButton = new JButton(">"); // Stores button for moving on to the next month
@@ -238,58 +296,21 @@ public class MainFrame extends JFrame {
         nextMonthButton.setBackground(themeColor); // Set background to white
         nextMonthButton.setForeground(Color.white); // Set text color to white
         nextMonthButton.setBorder(BorderFactory.createLineBorder(themeColor)); // Set border of the button to theme color
+        nextMonthButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                currentMonth += 1; // Increase month
+                if(currentMonth == 13) // If month becomes 13, move on to next year
+                {
+                    currentYear += 1;
+                    currentMonth = 1;
+                }
+                writeCurrentDate(currentMonth, currentYear);
+                new MainFrame(frameSize, frameTitle, ID);
+                dispose();
+            }
+        });
         headerPanel.add(nextMonthButton);
-
-        JPanel summaryPanel = new JPanel(); // Stores summary panel that displays spendings, savings, and total spending
-        summaryPanel.setLayout(null); // Layout set to null in order to place components based on coordinates
-        // Set bound based on frame size
-        summaryPanel.setBounds(
-                0,
-                frameSize[1] / 10,
-                frameSize[0] * 193 / 200,
-                frameSize[1] / 10
-        );
-        summaryPanel.setBorder(BorderFactory.createLineBorder(Color.black)); // Create border (black line)
-        add(summaryPanel);
-
-        JPanel spendingPanel = new JPanel(); // Stores spending that displays spending
-        spendingPanel.setLayout(null); // Layout set to null in order to place components based on coordinates
-        // Set bound based on frame size
-        spendingPanel.setBounds(
-                0,
-                0,
-                frameSize[0] * 64 / 200,
-                frameSize[1] / 10
-        );
-        spendingPanel.setBorder(BorderFactory.createLineBorder(Color.black)); // Create border (black line)
-        spendingPanel.setBackground(Color.white); // Set background to while
-        summaryPanel.add(spendingPanel);
-
-        JPanel savingPanel = new JPanel(); // Stores spending that displays savings
-        savingPanel.setLayout(null); // Layout set to null in order to place components based on coordinates
-        // Set bound based on frame size
-        savingPanel.setBounds(
-                frameSize[0] * 64 / 200,
-                0,
-                frameSize[0] * 64 / 200,
-                frameSize[1] / 10
-        );
-        savingPanel.setBorder(BorderFactory.createLineBorder(Color.black)); // Create border (black line)
-        savingPanel.setBackground(Color.white); // Set background to while
-        summaryPanel.add(savingPanel);
-
-        JPanel totalPanel = new JPanel(); // Stores spending that displays total spending
-        totalPanel.setLayout(null); // Layout set to null in order to place components based on coordinates
-        // Set bound based on frame size
-        totalPanel.setBounds(
-                frameSize[0] * 128 / 200,
-                0,
-                frameSize[0] * 65 / 200,
-                frameSize[1] / 10
-        );
-        totalPanel.setBorder(BorderFactory.createLineBorder(Color.black)); // Create border (black line)
-        totalPanel.setBackground(Color.white); // Set background to while
-        summaryPanel.add(totalPanel);
 
         JPanel mainPanel = new JPanel(); // Stores main panel where all the spending details will be displayed
         mainPanel.setLayout(new GridBagLayout()); // Layout set to GridBagLayout in order to place components in a row
@@ -311,6 +332,7 @@ public class MainFrame extends JFrame {
 
             for(String record : records) // Loop through each text file (record is name of each text file)
             {
+                if(record.equals("tempFile.txt")) continue; // Don't display temp file
                 constraints.gridx = 0; // Set to 0 as there's one component in a column
                 constraints.gridy = count; // Set to i as components would line up in a row
                 constraints.gridwidth = 1;
@@ -328,8 +350,9 @@ public class MainFrame extends JFrame {
                         String rawData = fileReader.nextLine(); // Read next line from text file
                         String[] data = rawData.split(" "); // Split data inside text file based on space
 
-                        String category = "Saving";
-                        if(data[0].equals("1")) category = data[3]; // If data is spending record, fill in category
+                        String category = data[3]; // Fill in category
+                        if(data[0].equals("1")) totalSpending += Integer.parseInt(data[2]); // If data is spending record, add to spending
+                        else totalSaving += Integer.parseInt(data[2]); // If data is saving record, add to saving
 
                         constraints.gridx = 0; // Set to 0 as there's one component in a column
                         constraints.gridy = count; // Set to i as components would line up in a row
@@ -358,6 +381,144 @@ public class MainFrame extends JFrame {
         scrollPane.getVerticalScrollBar().setUnitIncrement(10); // Adjust scroll speed
         add(scrollPane);
 
+        JPanel summaryPanel = new JPanel(); // Stores summary panel that displays spendings, savings, and total spending
+        summaryPanel.setLayout(null); // Layout set to null in order to place components based on coordinates
+        // Set bound based on frame size
+        summaryPanel.setBounds(
+                0,
+                frameSize[1] / 10,
+                frameSize[0] * 193 / 200,
+                frameSize[1] / 10
+        );
+        summaryPanel.setBorder(BorderFactory.createLineBorder(Color.black)); // Create border (black line)
+        add(summaryPanel);
+
+        JPanel spendingPanel = new JPanel(); // Stores spending that displays spending
+        spendingPanel.setLayout(null); // Layout set to null in order to place components based on coordinates
+        // Set bound based on frame size
+        spendingPanel.setBounds(
+                0,
+                0,
+                frameSize[0] * 64 / 200,
+                frameSize[1] / 10
+        );
+        spendingPanel.setBorder(BorderFactory.createLineBorder(Color.black)); // Create border (black line)
+        spendingPanel.setBackground(Color.white); // Set background to while
+
+        JLabel spendingLabel = new JLabel("Total Spending"); // Store label for total spending
+        // Set bound based on frame size
+        spendingLabel.setBounds(
+                0,
+                frameSize[1] / 75,
+                frameSize[0] * 64 / 200,
+                frameSize[1] / 25
+        );
+        spendingLabel.setFont(new Font("Arial", Font.BOLD, 17)); // Set font
+        spendingLabel.setHorizontalAlignment(JLabel.CENTER); // Set horizontal alignment to center
+        spendingLabel.setVerticalAlignment(JLabel.CENTER); // Set vertical alignment to center
+        spendingLabel.setForeground(amountColor[1]); // Set color to red
+        spendingPanel.add(spendingLabel);
+
+        JLabel spendingAmountLabel = new JLabel(NumberFormat.getInstance().format(totalSpending)); // Store label for total spending
+        // Set bound based on frame size
+        spendingAmountLabel.setBounds(
+                0,
+                frameSize[1] / 20,
+                frameSize[0] * 64 / 200,
+                frameSize[1] / 25
+        );
+        spendingAmountLabel.setFont(new Font("Arial", Font.BOLD, 17)); // Set font
+        spendingAmountLabel.setHorizontalAlignment(JLabel.CENTER); // Set horizontal alignment to center
+        spendingAmountLabel.setVerticalAlignment(JLabel.CENTER); // Set vertical alignment to center
+        spendingAmountLabel.setForeground(amountColor[1]); // Set color to red
+        spendingPanel.add(spendingAmountLabel);
+
+        summaryPanel.add(spendingPanel);
+
+        JPanel savingPanel = new JPanel(); // Stores spending that displays savings
+        savingPanel.setLayout(null); // Layout set to null in order to place components based on coordinates
+        // Set bound based on frame size
+        savingPanel.setBounds(
+                frameSize[0] * 64 / 200,
+                0,
+                frameSize[0] * 64 / 200,
+                frameSize[1] / 10
+        );
+        savingPanel.setBorder(BorderFactory.createLineBorder(Color.black)); // Create border (black line)
+        savingPanel.setBackground(Color.white); // Set background to while
+
+        JLabel savingLabel = new JLabel("Total Saving"); // Store label for total saving
+        // Set bound based on frame size
+        savingLabel.setBounds(
+                0,
+                frameSize[1] / 75,
+                frameSize[0] * 64 / 200,
+                frameSize[1] / 25
+        );
+        savingLabel.setFont(new Font("Arial", Font.BOLD, 17)); // Set font
+        savingLabel.setHorizontalAlignment(JLabel.CENTER); // Set horizontal alignment to center
+        savingLabel.setVerticalAlignment(JLabel.CENTER); // Set vertical alignment to center
+        savingLabel.setForeground(amountColor[0]); // Set color to red
+        savingPanel.add(savingLabel);
+
+        JLabel savingAmountLabel = new JLabel(NumberFormat.getInstance().format(totalSaving)); // Store label for total saving
+        // Set bound based on frame size
+        savingAmountLabel.setBounds(
+                0,
+                frameSize[1] / 20,
+                frameSize[0] * 64 / 200,
+                frameSize[1] / 25
+        );
+        savingAmountLabel.setFont(new Font("Arial", Font.BOLD, 17)); // Set font
+        savingAmountLabel.setHorizontalAlignment(JLabel.CENTER); // Set horizontal alignment to center
+        savingAmountLabel.setVerticalAlignment(JLabel.CENTER); // Set vertical alignment to center
+        savingAmountLabel.setForeground(amountColor[0]); // Set color to red
+        savingPanel.add(savingAmountLabel);
+
+        summaryPanel.add(savingPanel);
+
+        JPanel totalPanel = new JPanel(); // Stores spending that displays total spending
+        totalPanel.setLayout(null); // Layout set to null in order to place components based on coordinates
+        // Set bound based on frame size
+        totalPanel.setBounds(
+                frameSize[0] * 128 / 200,
+                0,
+                frameSize[0] * 65 / 200,
+                frameSize[1] / 10
+        );
+        totalPanel.setBorder(BorderFactory.createLineBorder(Color.black)); // Create border (black line)
+        totalPanel.setBackground(Color.white); // Set background to while
+
+        JLabel totalLabel = new JLabel("Total Saving"); // Store label for total
+        // Set bound based on frame size
+        totalLabel.setBounds(
+                0,
+                frameSize[1] / 75,
+                frameSize[0] * 64 / 200,
+                frameSize[1] / 25
+        );
+        totalLabel.setFont(new Font("Arial", Font.BOLD, 17)); // Set font
+        totalLabel.setHorizontalAlignment(JLabel.CENTER); // Set horizontal alignment to center
+        totalLabel.setVerticalAlignment(JLabel.CENTER); // Set vertical alignment to center
+        totalLabel.setForeground(Color.black); // Set color to red
+        totalPanel.add(totalLabel);
+
+        JLabel totalAmountLabel = new JLabel(NumberFormat.getInstance().format(totalSaving - totalSpending)); // Store label for total
+        // Set bound based on frame size
+        totalAmountLabel.setBounds(
+                0,
+                frameSize[1] / 20,
+                frameSize[0] * 64 / 200,
+                frameSize[1] / 25
+        );
+        totalAmountLabel.setFont(new Font("Arial", Font.BOLD, 17)); // Set font
+        totalAmountLabel.setHorizontalAlignment(JLabel.CENTER); // Set horizontal alignment to center
+        totalAmountLabel.setVerticalAlignment(JLabel.CENTER); // Set vertical alignment to center
+        totalAmountLabel.setForeground(Color.black); // Set color to red
+        totalPanel.add(totalAmountLabel);
+
+        summaryPanel.add(totalPanel);
+
         JPanel buttonPanel = new JPanel(); // Stores button panel that displays buttons for additional functions
         buttonPanel.setLayout(null); // Layout set to null in order to place components based on coordinates
         // Set bound based on frame size
@@ -375,7 +536,7 @@ public class MainFrame extends JFrame {
         mainButton.setBounds(
                 0,
                 0,
-                frameSize[0] * 48 / 200,
+                frameSize[0] * 64 / 200,
                 frameSize[1] / 10
         );
         mainButton.setFont(new Font("Arial", Font.BOLD, 20));
@@ -387,9 +548,9 @@ public class MainFrame extends JFrame {
         JButton analysisButton = new JButton("Analysis"); // Button that moves to main frame
         // Set bound based on frame size
         analysisButton.setBounds(
-                frameSize[0] * 48 / 200,
+                frameSize[0] * 64 / 200,
                 0,
-                frameSize[0] * 48 / 200,
+                frameSize[0] * 64 / 200,
                 frameSize[1] / 10
         );
         analysisButton.setFont(new Font("Arial", Font.BOLD, 20));
@@ -398,26 +559,12 @@ public class MainFrame extends JFrame {
         analysisButton.setBorder(BorderFactory.createLineBorder(Color.white)); // Set border of the button to white
         buttonPanel.add(analysisButton);
 
-        JButton assetButton = new JButton("Asset"); // Button that moves to main frame
-        // Set bound based on frame size
-        assetButton.setBounds(
-                frameSize[0] * 96 / 200,
-                0,
-                frameSize[0] * 48 / 200,
-                frameSize[1] / 10
-        );
-        assetButton.setFont(new Font("Arial", Font.BOLD, 20));
-        assetButton.setBackground(themeColor); // Set button's color to theme color
-        assetButton.setForeground(Color.white); // Set text color to white
-        assetButton.setBorder(BorderFactory.createLineBorder(Color.white)); // Set border of the button to white
-        buttonPanel.add(assetButton);
-
         JButton addButton = new JButton("Add"); // Button that moves to main frame
         // Set bound based on frame size
         addButton.setBounds(
-                frameSize[0] * 144 / 200,
+                frameSize[0] * 128 / 200,
                 0,
-                frameSize[0] * 49 / 200,
+                frameSize[0] * 64 / 200,
                 frameSize[1] / 10
         );
         addButton.setFont(new Font("Arial", Font.BOLD, 20));
@@ -427,7 +574,7 @@ public class MainFrame extends JFrame {
         addButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                new AddFrame(frameSize, frameTitle, ID);
+                new AddSpendingFrame(frameSize, frameTitle, ID);
                 dispose();
             }
         });
