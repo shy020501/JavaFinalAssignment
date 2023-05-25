@@ -89,10 +89,6 @@ public class AddFrame extends JFrame {
             public void actionPerformed(ActionEvent e) {
                 isSpending = 1; // Change the state to spending
 
-                // Reset fields of saving panel when moving onto spending panel
-                dateField.setText("");
-                descriptionField.setText("");
-                amountField.setText("");
                 new AddSpendingFrame(frameSize, frameTitle, ID); // Show spending frame
                 dispose();
             }
@@ -120,6 +116,27 @@ public class AddFrame extends JFrame {
             }
         });
         headerPanel.add(savingButton);
+
+        JButton backButton = new JButton("<"); // Stores button for moving on to the previous page
+        // Set bound based on frame size
+        backButton.setBounds(
+                frameSize[1] * 12 / 340,
+                frameSize[1] * 7 / 340,
+                frameSize[1] / 17,
+                frameSize[1] / 17
+        );
+        backButton.setFont(new Font("Arial", Font.BOLD, 20)); // Change font
+        backButton.setBackground(themeColor); // Set background to white
+        backButton.setForeground(Color.white); // Set text color to white
+        backButton.setBorder(BorderFactory.createLineBorder(themeColor)); // Set border of the button to theme color
+        backButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                new MainFrame(frameSize, frameTitle, ID);
+                dispose();
+            }
+        });
+        headerPanel.add(backButton);
 
         // Get current date
         String month = java.time.LocalDate.now().toString().split("-")[1];

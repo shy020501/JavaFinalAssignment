@@ -57,6 +57,28 @@ public class RegisterFrame extends JFrame {
         frameSize[1] = size[1];
         frameTitle = title;
 
+        JButton prevMonthButton = new JButton("<"); // Stores button for moving on to the previous month
+        // Set bound based on frame size
+        prevMonthButton.setBounds(
+                frameSize[1] * 12 / 340,
+                frameSize[1] * 7 / 340,
+                frameSize[1] / 17,
+                frameSize[1] / 17
+        );
+
+        prevMonthButton.setFont(new Font("Arial", Font.BOLD, 20)); // Change font
+        prevMonthButton.setBackground(new Color(238, 238, 238)); // Set background to background color
+        prevMonthButton.setForeground(Color.black); // Set text color to black
+        prevMonthButton.setBorder(BorderFactory.createLineBorder(new Color(238, 238, 238))); // Set border of the button to background color
+        prevMonthButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                new LogInFrame(frameSize, frameTitle);
+                dispose();
+            }
+        });
+        add(prevMonthButton);
+
         JLabel IDLabel = new JLabel("ID"); // Store label for ID
         // Set bound based on frame size
         IDLabel.setBounds(
