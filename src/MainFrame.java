@@ -1,3 +1,5 @@
+import sun.awt.windows.ThemeReader;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -19,8 +21,12 @@ public class MainFrame extends JFrame {
     private int totalSaving = 0; // Stores total saving
     private int currentYear = Integer.parseInt(java.time.LocalDate.now().toString().split("-")[0]);
     private int  currentMonth = Integer.parseInt(java.time.LocalDate.now().toString().split("-")[1]);
+    private JScrollPane mainScrollPane = new JScrollPane();
+    private JScrollPane analysisScrollPane = new JScrollPane();
+    JLabel categoryLabel = new JLabel();
     private String[] month = {"January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"};
-    private JPanel analysisPanel = new JPanel(); // Stores analysis panel where analysis of spending will be displayed
+    private String[] categories = {"Food", "Transport", "Entertainment", "Clothes", "Healthcare", "Education", "Housing", "Condolences", "Etc"};
+    private boolean done = false; // Stores weather creation of the page is done
     private void writeCurrentDate(int month, int year) // Keep record of month & year the user is looking at
     {
         File dateFile = new File("src/userInfo/" + userID + "/dateFile.txt");
@@ -187,7 +193,7 @@ public class MainFrame extends JFrame {
                 frameSize[1] / 15
         );
         categoryLabel.setVerticalAlignment(JLabel.CENTER); // Set vertical alignment to center
-        categoryLabel.setFont(new Font("Arial", Font.BOLD, 12)); // Set font
+        categoryLabel.setFont(new Font("Arial", Font.BOLD, 15)); // Set font
         recordPanel.add(categoryLabel);
 
         JLabel descriptionLabel = new JLabel(description); // Store label for displaying description
@@ -199,7 +205,7 @@ public class MainFrame extends JFrame {
                 frameSize[1] / 15
         );
         descriptionLabel.setVerticalAlignment(JLabel.CENTER); // Set vertical alignment to center
-        descriptionLabel.setFont(new Font("Arial", Font.BOLD, 12)); // Set font
+        descriptionLabel.setFont(new Font("Arial", Font.BOLD, 15)); // Set font
         recordPanel.add(descriptionLabel);
 
         JLabel amountLabel = new JLabel(NumberFormat.getInstance().format(amount)); // Store label for displaying amount
@@ -211,7 +217,7 @@ public class MainFrame extends JFrame {
                 frameSize[1] / 15
         );
         amountLabel.setVerticalAlignment(JLabel.CENTER); // Set vertical alignment to center
-        amountLabel.setFont(new Font("Arial", Font.BOLD, 12)); // Set font
+        amountLabel.setFont(new Font("Arial", Font.BOLD, 15)); // Set font
         amountLabel.setForeground(amountColor[isSpending]);
         recordPanel.add(amountLabel);
 
@@ -241,6 +247,7 @@ public class MainFrame extends JFrame {
 
         JPanel headerPanel = new JPanel(); // Stores header panel
         headerPanel.setLayout(null); // Layout set to null in order to place components based on coordinates
+        // Set bound based on frame size
         headerPanel.setBounds(
                 0,
                 0,
@@ -249,7 +256,6 @@ public class MainFrame extends JFrame {
         );
         headerPanel.setBorder(BorderFactory.createLineBorder(Color.black));
         headerPanel.setBackground(themeColor); // Change background color to theme color
-        add(headerPanel);
 
         JLabel monthLabel = new JLabel(month[currentMonth - 1] + " " + currentYear); // Stores label for displaying month
         // Set bound based on frame size
@@ -271,7 +277,7 @@ public class MainFrame extends JFrame {
                 frameSize[1] * 7 / 340,
                 frameSize[1] / 17,
                 frameSize[1] / 17
-                );
+        );
         prevMonthButton.setFont(new Font("Arial", Font.BOLD, 20)); // Change font
         prevMonthButton.setBackground(themeColor); // Set background to white
         prevMonthButton.setForeground(Color.white); // Set text color to white
@@ -320,6 +326,29 @@ public class MainFrame extends JFrame {
         });
         headerPanel.add(nextMonthButton);
 
+        ImageIcon mainIcon = new ImageIcon("src/Icon/icon.jpg"); // Get icon of the program
+
+        // Resize image
+        Image mainImg = mainIcon.getImage();
+        mainImg = mainImg.getScaledInstance(
+                frameSize[0] / 8,
+                frameSize[0] / 8,
+                Image.SCALE_SMOOTH
+        );
+        mainIcon = new ImageIcon(mainImg);
+
+        JLabel iconLabel = new JLabel(mainIcon); // Create label for displaying icon
+        // Set bounds based on frame size
+        iconLabel.setBounds(
+                frameSize[0] * 4 / 5,
+                3,
+                frameSize[0] / 8,
+                frameSize[0] / 8
+        );
+        headerPanel.add(iconLabel);
+
+        add(headerPanel);
+
         JPanel mainPanel = new JPanel(); // Stores main panel where all the spending details will be displayed
         mainPanel.setLayout(new GridBagLayout()); // Layout set to GridBagLayout in order to place components in a row
         GridBagConstraints constraints = new GridBagConstraints(); // Store constraints for GridBagLayout
@@ -335,6 +364,7 @@ public class MainFrame extends JFrame {
         // Get directory of current year and month
         String currentDir = "src/userInfo/" + ID + "/" + String.valueOf(currentYear) + "/" + month + "/";
         File dir = new File(currentDir);
+
         int count = 0;
         if(dir.exists()) // If such directory exists
         {
@@ -347,10 +377,10 @@ public class MainFrame extends JFrame {
 
                 File dailyRecord = new File(currentDir + record); // Stores each daily text file
 
-                if(dailyRecord.length() != 0)
+                if(dailyRecord.length() != 0) // Ignore empty files
                 {
                     constraints.gridx = 0; // Set to 0 as there's one component in a column
-                    constraints.gridy = count; // Set to i as components would line up in a row
+                    constraints.gridy = count; // Set to count as components would line up in a row
                     constraints.gridwidth = 1;
                     constraints.gridheight = 1;
 
@@ -378,7 +408,7 @@ public class MainFrame extends JFrame {
                             }
 
                             constraints.gridx = 0; // Set to 0 as there's one component in a column
-                            constraints.gridy = count; // Set to i as components would line up in a row
+                            constraints.gridy = count; // Set to count as components would line up in a row
                             constraints.gridwidth = 1;
                             constraints.gridheight = 1;
 
@@ -399,7 +429,7 @@ public class MainFrame extends JFrame {
                 for(int i = 0; i < 10 - count; i++) // Create empty panel (if not layout becomes weird for record panels)
                 {
                     constraints.gridx = 0; // Set to 0 as there's one component in a column
-                    constraints.gridy = count + 1 + i; // Set to i as components would line up in a row
+                    constraints.gridy = count + 1 + i; // Set empty spaces
                     constraints.gridwidth = 1;
                     constraints.gridheight = 1;
 
@@ -409,7 +439,7 @@ public class MainFrame extends JFrame {
             }
         }
 
-        JScrollPane mainScrollPane = new JScrollPane(mainPanel, ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+        mainScrollPane = new JScrollPane(mainPanel, ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
         // Set bound based on frame size
         mainScrollPane.setBounds(
                 0,
@@ -420,10 +450,123 @@ public class MainFrame extends JFrame {
         mainScrollPane.getVerticalScrollBar().setUnitIncrement(10); // Adjust scroll speed
         add(mainScrollPane);
 
-        analysisPanel.setLayout(null); // Layout set to null
 
+        JPanel analysisPanel = new JPanel(); // Stores main panel where analysis of spending will be displayed
+        analysisPanel.setLayout(new GridBagLayout()); // Layout set to GridBagLayout in order to place components in a row
 
-        JPanel summaryPanel = new JPanel(); // Stores summary panel that displays spendings, savings, and total spending
+        constraints.fill = GridBagConstraints.HORIZONTAL; // The component of mainPanel fills the horizontal axis
+
+        // Convert month to string
+        month = String.valueOf(currentMonth);
+        if(month.length() == 1) month = "0" + month; // If month is 1~9, convert it into 01~09
+
+        // Get directory of current year and month
+        currentDir = "src/userInfo/" + ID + "/" + String.valueOf(currentYear) + "/" + month + "/";
+        dir = new File(currentDir);
+        int[] categorySpending = new int[categories.length];
+        for(int i = 0; i < categories.length; i++) { categorySpending[i] = 0; } // Initialise category spending to 0
+
+        if(dir.exists()) // If such directory exists
+        {
+            String[] records = dir.list(); // Get all the text files(day) in the directory
+            Collections.reverse(Arrays.asList(records)); // Reverse the array so that the latest record would be shown on top
+
+            for(String record : records) // Loop through each text file (record is name of each text file)
+            {
+                if(record.equals("tempFile.txt")) continue; // Don't display temp file
+                File dailyRecord = new File(currentDir + record); // Stores each daily text file
+
+                if(dailyRecord.length() != 0) // Ignore empty files
+                {
+                    try{
+                        Scanner fileReader = new Scanner(dailyRecord); // Create scanner for reading text file
+                        while(fileReader.hasNextLine()){
+                            String rawData = fileReader.nextLine(); // Read next line from text file
+                            String[] data = rawData.split(" "); // Split data inside text file based on space
+                            // data => isSpending category amount description
+
+                            String category = data[1]; // Fill in category
+                            if(!data[0].equals("0")) // Exclude saving category
+                            {
+                                // Get index of category and add amount
+                                categorySpending[Arrays.asList(categories).indexOf(category)] += Integer.parseInt(data[2]);
+                            }
+                        }
+                    } catch (FileNotFoundException ex) {
+                        System.out.println("File not found!");
+                        ex.printStackTrace();
+                    }
+                }
+            }
+
+            for(int i = 0; i < categories.length; i++)
+            {
+                constraints.gridx = 0; // Set to 0 as there's one component in a column
+                constraints.gridy = i; // Set to i as components would line up in a row
+                constraints.gridwidth = 1;
+                constraints.gridheight = 1;
+
+                JPanel categoryPanel = new JPanel();
+                categoryPanel.setLayout(null); // Set layout to null
+                categoryPanel.setPreferredSize(new Dimension(frameSize[0] * 95 / 100, frameSize[1] / 15));
+                categoryPanel.setBorder(BorderFactory.createLineBorder(Color.black)); // Set border to black line
+                categoryPanel.setBackground(Color.white); // Set background to white
+
+                categoryLabel = new JLabel(categories[i]); // Store label for each category
+                // Set bounds based on frame size
+                categoryLabel.setBounds(
+                        frameSize[0] / 60,
+                        0,
+                        frameSize[0] / 4,
+                        frameSize[1] / 15
+                );
+                categoryLabel.setVerticalAlignment(JLabel.CENTER); // Set vertical alignment to center
+                categoryLabel.setFont(new Font("Arial", Font.BOLD, 15)); // Set font
+                categoryPanel.add(categoryLabel);
+
+                JLabel amountLabel = new JLabel(String.valueOf(categorySpending[i])); // Store label for each category spending
+                amountLabel.setBounds(
+                        (frameSize[0] * 95 / 100) - (frameSize[0] * 2 / 5),
+                        0,
+                        frameSize[0] / 4,
+                        frameSize[1] / 15
+                );
+                amountLabel.setVerticalAlignment(JLabel.CENTER); // Set vertical alignment to center
+                amountLabel.setHorizontalAlignment(JLabel.RIGHT); // Set vertical alignment to center
+                amountLabel.setFont(new Font("Arial", Font.BOLD, 15)); // Set font
+                categoryPanel.add(amountLabel);
+
+                analysisPanel.add(categoryPanel, constraints);
+            }
+        }
+
+        if(categories.length < 10)
+        {
+            for(int i = 0; i < 10 - categories.length; i++) // Create empty panel (if not layout becomes weird for record panels)
+            {
+                constraints.gridx = 0; // Set to 0 as there's one component in a column
+                constraints.gridy = categories.length + 1 + i; // Set empty spaces
+                constraints.gridwidth = 1;
+                constraints.gridheight = 1;
+
+                JPanel emptyPanel = createEmptyPanel();
+                analysisPanel.add(emptyPanel, constraints);
+            }
+        }
+
+        analysisScrollPane = new JScrollPane(analysisPanel, ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+        // Set bound based on frame size
+        analysisScrollPane.setBounds(
+                0,
+                frameSize[1] * 2 / 10,
+                frameSize[0] * 193 / 200,
+                frameSize[1] * 63 / 100
+        );
+        analysisScrollPane.getVerticalScrollBar().setUnitIncrement(10); // Adjust scroll speed
+
+        add(analysisScrollPane);
+
+        JPanel summaryPanel = new JPanel(); // Stores summary panel that displays spending, saving, and total spending
         summaryPanel.setLayout(null); // Layout set to null in order to place components based on coordinates
         // Set bound based on frame size
         summaryPanel.setBounds(
@@ -433,7 +576,6 @@ public class MainFrame extends JFrame {
                 frameSize[1] / 10
         );
         summaryPanel.setBorder(BorderFactory.createLineBorder(Color.black)); // Create border (black line)
-        add(summaryPanel);
 
         JPanel spendingPanel = new JPanel(); // Stores spending that displays spending
         spendingPanel.setLayout(null); // Layout set to null in order to place components based on coordinates
@@ -479,7 +621,6 @@ public class MainFrame extends JFrame {
 
         JPanel savingPanel = new JPanel(); // Stores spending that displays savings
         savingPanel.setLayout(null); // Layout set to null in order to place components based on coordinates
-        // Set bound based on frame size
         savingPanel.setBounds(
                 frameSize[0] * 64 / 200,
                 0,
@@ -561,6 +702,8 @@ public class MainFrame extends JFrame {
 
         summaryPanel.add(totalPanel);
 
+        add(summaryPanel);
+
         JPanel buttonPanel = new JPanel(); // Stores button panel that displays buttons for additional functions
         buttonPanel.setLayout(null); // Layout set to null in order to place components based on coordinates
         // Set bound based on frame size
@@ -571,7 +714,6 @@ public class MainFrame extends JFrame {
                 frameSize[1] / 10
         );
         buttonPanel.setBorder(BorderFactory.createLineBorder(Color.black));
-        add(buttonPanel);
 
         JButton mainButton = new JButton("Main"); // Button that moves to main frame
         // Set bound based on frame size
@@ -588,7 +730,7 @@ public class MainFrame extends JFrame {
         mainButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                getContentPane().remove(analysisPanel);
+                getContentPane().remove(analysisScrollPane);
                 add(mainScrollPane);
                 repaint();
             }
@@ -611,7 +753,7 @@ public class MainFrame extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 getContentPane().remove(mainScrollPane);
-                add(analysisPanel);
+                add(analysisScrollPane);
                 repaint();
             }
         });
@@ -637,6 +779,10 @@ public class MainFrame extends JFrame {
             }
         });
         buttonPanel.add(addButton);
+
+        add(buttonPanel);
+        done = true;
+
 
         // Settings for frame
         setTitle(frameTitle);
