@@ -27,6 +27,7 @@ public class EditSpendingFrame extends AddSpendingFrame{ // Extends AddSpendingF
             @Override
             public void actionPerformed(ActionEvent e) {
                 new MainFrame(frameSize, frameTitle, ID);
+                timerThread.interrupt();
                 dispose();
             }
         });

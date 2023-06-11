@@ -180,6 +180,7 @@ public class AddSpendingFrame extends AddFrame {
                 }
 
                 new MainFrame(frameSize, frameTitle, ID);
+                timerThread.interrupt();
                 dispose();
             }
         });

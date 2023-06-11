@@ -20,7 +20,7 @@ public class AddFrame extends JFrame {
     protected JTextField dateField = new JTextField(); // Text field for inputting date
     protected JTextField descriptionField = new JTextField(); // Text field for inputting description of the record
     protected JTextField amountField = new JTextField(); // Text field for inputting amount of money spent / saved
-    private Thread timerThread; // 알림을 주기 위한 스레드
+    protected Thread timerThread; // Thread for giving alert
 
     public void setFieldText(String date, String description, String amount) // Setter for setting text of text fields in spending panel
     {
@@ -56,9 +56,9 @@ public class AddFrame extends JFrame {
     }
 
     private void resetTimer() {
-        timerThread.interrupt(); // 기존의 스레드를 중지시키고
-        timerThread = new Thread(new TimerRunnable()); // 새로운 스레드 생성하여
-        timerThread.start(); // 스레드 실행
+        timerThread.interrupt(); // Stop the running thread
+        timerThread = new Thread(new TimerRunnable()); // Create new thread
+        timerThread.start(); // Start new thread
     }
 
     // Runnable class for giving alert
@@ -66,21 +66,28 @@ public class AddFrame extends JFrame {
         @Override
         public void run() {
             try {
-                Thread.sleep(30 * 1000); // Wait for 30 seconds
+                Thread.sleep(60 * 1000); // Wait for 60 seconds
                 SwingUtilities.invokeLater(new Runnable() {
                     @Override
                     public void run() {
-                        JOptionPane.showMessageDialog(null, "You've been away for 30 seconds", "Warning", JOptionPane.WARNING_MESSAGE);
+                        JOptionPane.showMessageDialog(null, "You've been away for 60 seconds", "Warning", JOptionPane.WARNING_MESSAGE);
+                        new MainFrame(frameSize, frameTitle, userID); // Go back to main frame
+                        dispose(); // Delete window
                     }
                 });
             } catch (InterruptedException e) {
-                e.printStackTrace();
+                // Nothing happens when interrupt occurs when timer resets
+//                System.out.println("Interrupt");
             }
         }
     }
 
     public AddFrame(int[] size, String title, String ID)
     {
+        // Create thread and start
+        timerThread = new Thread(new TimerRunnable());
+        timerThread.start();
+
         // Get frame's size, title, and userID as parameter and use them for setting the frame
         frameSize[0] = size[0];
         frameSize[1] = size[1];
@@ -115,6 +122,7 @@ public class AddFrame extends JFrame {
                 isSpending = 1; // Change the state to spending
 
                 new AddSpendingFrame(frameSize, frameTitle, ID); // Show spending frame
+                timerThread.interrupt();
                 dispose();
             }
         });
@@ -137,6 +145,7 @@ public class AddFrame extends JFrame {
                 isSpending = 0; // Change the state to saving
 
                 new AddSavingFrame(frameSize, frameTitle, ID); // Show saving frame
+                timerThread.interrupt();
                 dispose();
             }
         });
@@ -158,6 +167,7 @@ public class AddFrame extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 new MainFrame(frameSize, frameTitle, ID);
+                timerThread.interrupt();
                 dispose();
             }
         });
@@ -177,6 +187,7 @@ public class AddFrame extends JFrame {
                 {
                     dateField.setText("");
                 }
+                resetTimer(); // When user tries to enter, reset timer
             }
             @Override
             public void focusLost(FocusEvent e) { // Show current date in the text field if nothing has been entered and user clicks other components
@@ -184,23 +195,6 @@ public class AddFrame extends JFrame {
                 {
                     dateField.setText(currentDate);
                 }
-            }
-        });
-
-        // 스레드 생성 및 실행
-        timerThread = new Thread(new TimerRunnable());
-        timerThread.start();
-
-        // 컴포넌트들에 FocusListener 추가하여 사용자의 입력 작업이 감지되면 타이머 스레드를 리셋
-        dateField.addFocusListener(new FocusListener() {
-            @Override
-            public void focusGained(FocusEvent e) {
-                resetTimer(); // When user tries to enter, reset timer
-            }
-
-            @Override
-            public void focusLost(FocusEvent e) {
-                // Do nothing
             }
         });
 

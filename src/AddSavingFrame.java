@@ -152,6 +152,7 @@ public class AddSavingFrame extends AddFrame {
                 }
 
                 new MainFrame(frameSize, frameTitle, ID);
+                timerThread.interrupt();
                 dispose();
             }
         });

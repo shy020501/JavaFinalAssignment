@@ -27,6 +27,7 @@ public class EditSavingFrame extends AddSavingFrame{ // Extends AddSavingFrame
             @Override
             public void actionPerformed(ActionEvent e) {
                 new MainFrame(frameSize, frameTitle, ID);
+                timerThread.interrupt();
                 dispose();
             }
         });
