@@ -1,0 +1,8 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="JavaFinalAssignment:jar">
+    <output-path>$PROJECT_DIR$/out/artifacts/JavaFinalAssignment_jar</output-path>
+    <root id="archive" name="JavaFinalAssignment.jar">
+      <element id="module-output" name="JavaFinalAssignment" />
+    </root>
+  </artifact>
+</component>
